@@ -1,4 +1,4 @@
-# This code is performing Gaussian elimination
+# This code is part of a Python module for performing Gaussian elimination
 # Name: Roshan Yadav
 # Roll no: 2311144
 
@@ -31,13 +31,14 @@ class matrix():
             self.data[f][i] = float(self.data[f][i]) + float(c) *  float(self.data[r][i])
     
     def aug(self,b=None):
+        # Create a deep copy to avoid modifying original data
         A = copy.deepcopy(self.data)
-
+        # Fix: Handle both 1D and 2D b vectors
         for i in range(len(A)):
             if isinstance(b[0], list):
-                A[i].append(b[i][0])  
+                A[i].append(b[i][0])  # b is 2D, take first element
             else:
-                A[i].append(b[i])    
+                A[i].append(b[i])     # b is 1D
         return A
     
     def zero(self,i=0):
@@ -53,33 +54,36 @@ class matrix():
         m = self.m
         n = self.n
         
-        for i in range(m):
-            # Finding pivot
+        # Gauss-Jordan elimination
+        for i in range(min(m, n)):  # Process only min(m,n) columns
+            # Find pivot (largest element in column i from row i onwards)
             max_row = i
             for k in range(i + 1, m):
                 if abs(A.data[k][i]) > abs(A.data[max_row][i]):
                     max_row = k
             
-            # Swap the current row with the max row
+            # Swap rows if needed
             if max_row != i:
                 A.row_swap(i, max_row)
             
-            # Make diagonal element 1
-            if A.data[i][i] != 0:
-                A.con_mul(c=A.zero(A.data[i][i]), p=i)
+            # Check if pivot is zero
+            if abs(A.data[i][i]) < 1e-10:
+                print(f"Warning: Matrix is singular at column {i}")
+                return None
             
-            # Make other elements in column i zero
+            # Make diagonal element 1
+            pivot = A.data[i][i]
+            A.con_mul(c=1.0/pivot, p=i)
+            
+            # Make other elements in column i zero (both above and below)
             for j in range(m):
-                if j != i and A.data[j][i] != 0:
-                    A.row_ops(j, i, -A.data[j][i])
-        
+                if j != i and abs(A.data[j][i]) > 1e-10:
+                    multiplier = -A.data[j][i]
+                    A.row_ops(j, i, multiplier)
+        A.display()  # Display the final matrix after elimination
         # Extract solution
         L = []
-        for i in range(len(A.data)):
-            L.append(A.data[i][len(A.data[i])-1])
-        
-        A.display()
+        for i in range(min(m, n)):
+            L.append(A.data[i][n])  # Solution is in column n (last column)
         
         return L
-
-
