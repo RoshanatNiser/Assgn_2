@@ -2,6 +2,17 @@
 # Name: Roshan Yadav
 # Roll no: 2311144
 import copy
+
+def read_matrix(filename):
+    with open( filename , 'r' ) as f :
+        matrix =[]
+        for line in f :
+            # Convert each line into a list of floats
+            row = [ float(num) for num in line.strip().split() ]
+            matrix.append(row)
+    return matrix
+
+
 class matrix():
     def __init__(self,data=None):
         self.m=len(data)
@@ -93,3 +104,4 @@ class matrix():
             L.append(A.data[i][n])  # Solution is in column n (last column)
         
         return L
+
