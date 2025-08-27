@@ -1,15 +1,12 @@
 # This code is part of a Python module for performing Gaussian elimination
 # Name: Roshan Yadav
 # Roll no: 2311144
-
 import copy
-
 class matrix():
     def __init__(self,data=None):
         self.m=len(data)
         self.n=len(data[0])
         self.data=data
-
     def display(self):
         print(self.data)
         return None
@@ -18,12 +15,12 @@ class matrix():
         self.data[u], self.data[p] = self.data[p], self.data[u]
     
     def con_mul(self,c=0,p=0):
-        ''''This fuction does the 
-        constant 'c'multpication 
+        '''This function does the 
+        constant 'c' multiplication 
         to a row no 'p'.'''
         for i in range(len(self.data[p])):
             self.data[p][i]=float(c)*float(self.data[p][i])
-
+    
     def row_ops(self,f=None,r=None,c=None):
         '''This function does the following row operation:
         Row[f] ->Row[f] + c*Row[r]'''
@@ -33,7 +30,7 @@ class matrix():
     def aug(self,b=None):
         # Create a deep copy to avoid modifying original data
         A = copy.deepcopy(self.data)
-        # Fix: Handle both 1D and 2D b vectors
+        # Handle both 1D and 2D b vectors
         for i in range(len(A)):
             if isinstance(b[0], list):
                 A[i].append(b[i][0])  # b is 2D, take first element
@@ -54,8 +51,8 @@ class matrix():
         m = self.m
         n = self.n
         
-        # Gauss-Jordan elimination
-        for i in range(min(m, n)):  # Process only min(m,n) columns
+        # Forward elimination with partial pivoting
+        for i in range(min(m, n)):
             # Find pivot (largest element in column i from row i onwards)
             max_row = i
             for k in range(i + 1, m):
@@ -68,19 +65,28 @@ class matrix():
             
             # Check if pivot is zero
             if abs(A.data[i][i]) < 1e-10:
-                print(f"Warning: Matrix is singular at column {i}")
+                print(f"Matrix is singular at column {i}")
                 return None
             
             # Make diagonal element 1
             pivot = A.data[i][i]
             A.con_mul(c=1.0/pivot, p=i)
             
-            # Make other elements in column i zero (both above and below)
-            for j in range(m):
-                if j != i and abs(A.data[j][i]) > 1e-10:
+            # Make elements below pivot zero
+            for j in range(i + 1, m):
+                if abs(A.data[j][i]) > 1e-10:
                     multiplier = -A.data[j][i]
                     A.row_ops(j, i, multiplier)
+        
+        # Back substitution (Jordan part)
+        for i in range(min(m,n)-1, -1, -1):
+            for j in range(i):
+                if abs(A.data[j][i]) > 1e-10:
+                    multiplier = -A.data[j][i]
+                    A.row_ops(j, i, multiplier)
+        
         A.display()  # Display the final matrix after elimination
+        
         # Extract solution
         L = []
         for i in range(min(m, n)):
