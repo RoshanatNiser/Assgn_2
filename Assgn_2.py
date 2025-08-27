@@ -5,16 +5,6 @@
 from Func_lib_for_Assgn_2 import *
 
 
-
-def read_matrix(filename):
-    with open( filename , 'r' ) as f :
-        matrix =[]
-        for line in f :
-            # Convert each line into a list of floats
-            row = [ float(num) for num in line.strip().split() ]
-            matrix.append(row)
-    return matrix
-
 # Question 1
 A= read_matrix("A.txt")  # Read matrix A from file  
 b= read_matrix("b.txt")  # Read matrix b from file
@@ -43,6 +33,7 @@ print("Questin 2 solution:", C.gauss_jorden(d)) # Output: [0.0, 0.0, 0.0, 0.0, 0
 
 
         
+
 
 
 
